@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordMaster - Learn English</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="main-menu" class="screen">
+        <h1>WordMaster</h1>
+        <p>Improve your English skills through fun interactive challenges!</p>
+        <button onclick="startGame()">Play</button>
+        <button onclick="openSettings()">Settings</button>
+    </div>
+    
+    <div id="game-screen" class="screen" style="display: none;">
+        <h2 id="level-title">Arrange the words in the correct order</h2>
+        <div id="word-container"></div>
+        <button onclick="checkAnswer()">Check</button>
+        <button onclick="goToMenu()">Back to Menu</button>
+        <div id="character" class="character">😊</div>
+    </div>
+    
+    <div id="settings-screen" class="screen" style="display: none;">
+        <h2>Settings</h2>
+        <label>
+            Background Color:
+            <input type="color" id="bg-color-picker" onchange="changeBackground()">
+        </label>
+        <br>
+        <label>
+            Character Style:
+            <select id="character-style" onchange="changeCharacter()">
+                <option value="😊">Happy</option>
+                <option value="🤖">Robot</option>
+                <option value="🐱">Cat</option>
+                <option value="🦸">Hero</option>
+            </select>
+        </label>
+        <br>
+        <button onclick="goToMenu()">Back to Menu</button>
+    </div>
+
+    <script>
+        let levels = [
+        { title: "Basic Sentence Formation", words: ['I', 'am', 'learning', 'English'], correct: 'I am learning English' },
+            { title: "Translate: 'Я люблю программировать'", words: ['I', 'love', 'to', 'code'], correct: 'I love to code' },
+            { title: "Complete the sentence", words: ['She', 'is', 'a', 'doctor'], correct: 'She is a doctor' },
+            { title: "Form a Question", words: ['Where', 'are', 'you', 'from'], correct: 'Where are you from' },
+            { title: "Describe the weather", words: ['It', 'is', 'sunny', 'today'], correct: 'It is sunny today' },
+            { title: "Make a request", words: ['Can', 'you', 'help', 'me'], correct: 'Can you help me' },
+            { title: "Talk about hobbies", words: ['I', 'enjoy', 'playing', 'guitar'], correct: 'I enjoy playing guitar' },
+            { title: "Ask for directions", words: ['How', 'do', 'I', 'get', 'there'], correct: 'How do I get there' },
+            { title: "Talk about food", words: ['I', 'like', 'eating', 'pizza'], correct: 'I like eating pizza' },
+            { title: "Future plans", words: ['I', 'will', 'visit', 'London'], correct: 'I will visit London' }
+        ];
+        let currentLevel = 0;
+        let selectedWords = [];
+
+        function startGame() {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            loadLevel();
+        }
+
+        function openSettings() {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('settings-screen').style.display = 'block';
+        }
+
+        function goToMenu() {
+            document.getElementById('settings-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('main-menu').style.display = 'block';
+            currentLevel = 0;
+        }
+
+        function loadLevel() {
+            if (currentLevel >= levels.length) {
+                alert('Congratulations! You have completed all levels!');
+                goToMenu();
+                return;
+            }
+            let level = levels[currentLevel];
+            document.getElementById('level-title').innerText = level.title;
+            let words = level.words.sort(() => Math.random() - 0.5);
+            let container = document.getElementById('word-container');
+            container.innerHTML = '';
+            words.forEach(word => {
+                let btn = document.createElement('button');
+                btn.innerText = word;
+                btn.onclick = () => selectWord(btn);
+                container.appendChild(btn);
+            });
+            selectedWords = [];
+            document.getElementById('character').classList.remove('dance');
+        }
+
+        function selectWord(button) {
+            selectedWords.push(button.innerText);
+            button.disabled = true;
+        }
+
+        function checkAnswer() {
+            let level = levels[currentLevel];
+            if (selectedWords.join(' ') === level.correct) {
+                alert('Correct! Moving to next level.');
+                document.getElementById('character').classList.add('dance');
+                currentLevel++;
+                setTimeout(loadLevel, 1000);
+            } else {
+                alert('Try again! Resetting level.');
+                selectedWords = [];
+                loadLevel();
+            }
+        }
+
+        function changeBackground() {
+            document.body.style.backgroundColor = document.getElementById('bg-color-picker').value;
+        }
+
+        function changeCharacter() {
+            document.getElementById('character').innerText = document.getElementById('character-style').value;
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #2a2a40;
+            color: #fff;
+            padding: 20px;
+        }
+        .screen {
+            margin-top: 50px;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        p {
+            font-size: 18px;
+            color: #bbb;
+        }
+        button {
+            display: block;
+            margin: 10px auto;
+            padding: 12px 24px;
+            font-size: 20px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #ff7eb3, #ff758c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+        }
+        #word-container {
+            margin: 20px;
+        }
+        #word-container button {
+            display: inline-block;
+            margin: 5px;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #ffcc00;
+            color: black;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        #word-container button:hover {
+            background-color: #ffaa00;
+        }
+        .character {
+            font-size: 50px;
+            margin-top: 20px;
+        }
+        .dance {
+            animation: dance 0.5s infinite alternate;
+        }
+        @keyframes dance {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+    </style>
+</body>
+</html>
